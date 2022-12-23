@@ -1,0 +1,15 @@
+@import "../../../index.scss";
+
+.message_container {
+    @extend .bordered_container; 
+    margin-bottom: 25px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.comments_container {
+    list-style: none;
+    padding: 0;
+}
