@@ -1,18 +1,13 @@
 import React from "react";
 import Modal from "react-bootstrap/Modal";
+import { useDispatch } from "react-redux";
+import { deleteComment } from "../../../../redux/wall/wall_slice";
 import "./delete_modal.scss";
 
-export default function DeleteMessageModal(props) {
+export default function DeleteCommentModal(props) {
+    const dispatch = useDispatch();
 
-    function submitDeleteMessage(event) {
-        event.preventDefault();
-        let { deleteMessage, message_id } = props;
-
-		deleteMessage(message_id);
-    }
-
-    let { deleteMessage, message_id, ...rest } = props;
-
+    let { comment_id, message_id, ...rest } = props;
 
 	return (
         <Modal
@@ -26,10 +21,14 @@ export default function DeleteMessageModal(props) {
             <Modal.Body className="py-0 px-5 pb-5">
                 <form
                     method="post"
-                    onSubmit={submitDeleteMessage}
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        dispatch(deleteComment({message_id, comment_id}))
+                        rest.onHide();
+                    }}
                 >
-                    <h4 className="pb-3">Confirm Delete Message</h4>
-                    <p>Are you sure you want to remove this message? This action cannot be undone.</p>
+                    <h4 className="pb-3">Confirm Delete Comment</h4>
+                    <p>Are you sure you want to remove this comment? This action cannot be undone.</p>
                     <div className="buttons_container">
                         <button
                             type="button"

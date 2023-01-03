@@ -1,19 +1,22 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
+import { useForm } from "react-hook-form";
+import { useDispatch } from 'react-redux'
+import { addMessage } from "../../../../redux/wall/wall_slice";
 import "./create_message_modal.scss";
 
 export default function CreateMessageModal(props) {
-	let { changeMessageContent, message_content, submitMessage, ...rest } = props;
-	const textarea_element = useRef();
+	const dispatch = useDispatch();
+	const { register, handleSubmit, formState: { isValid }, setFocus } = useForm();
 
 	useEffect(() => {
-		textarea_element.current.focus();
-	}, [])
-
+		setFocus("message");
+	}, [setFocus]);
+	
 	return (
 		<Modal
 			className="create_message_modal"
-			{...rest}
+			{...props}
 			size="lg"
 			aria-labelledby="contained-modal-title-vcenter"
 			centered
@@ -23,26 +26,28 @@ export default function CreateMessageModal(props) {
 				<h4 className="pb-3">Create a Message</h4>
 				<form
 					method="post"
-					onSubmit={submitMessage}
+					onSubmit={handleSubmit(({ message }) => {
+						dispatch(addMessage(message));
+						props.onHide();
+					})}
 				>
 					<textarea
-						name="message"
-						ref={textarea_element}
-						value={message_content}
-						onChange={changeMessageContent}
+						{...register("message", {
+							required: true
+						})}
 					></textarea>
 					<div className="buttons_container pt-4">
 						<button
 							type="button"
 							className="cancel_button"
-							onClick={rest.onHide}
+							onClick={props.onHide}
 						>
 							Cancel
 						</button>
 						<button
 							type="submit"
-							className={!message_content ? "success_button disabled_button" : "success_button"}
-							disabled={!message_content}
+							className={!isValid ? "success_button disabled_button" : "success_button"}
+							disabled={!isValid}
 						>
 							Post Message
 						</button>

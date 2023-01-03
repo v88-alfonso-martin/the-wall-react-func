@@ -1,55 +1,41 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import illustration from "../../assets/images/Group_2019.png";
 import "./login.scss";
 
 export default function Login() {
-	const [form_value, setFormValue] = useState({
-		email: "",
-		password: "",
-	});
+	const { register, handleSubmit, formState: { errors }, setError } = useForm();
 
-	const [is_error, setIsError] = useState(false);
-
-	function submitLoginUser(event) {
-		event.preventDefault();
-		let { email, password } = form_value;
-
+	function submitLoginUser({ email, password }) {
 		if (email === "test@test.com" && password === "password") {
 			window.location.href = "/wall";
 		} 
         else {
-			setFormValue({
-				email: "",
-				password: "",
-			});
-			setIsError(true);
+			setError("email",  { type: "server", message: "Incorrect Email."});
+			setError("password",  { type: "server", message: "Incorrect Password."});
 		}
 	}
-
-	function changeFormState(event) {
-		setFormValue(prev_state => ({ ...prev_state, [event.target.name]: event.target.value }));
-	}
-
+	
 	return (
 		<div className="login_container">
 			<div className="form_container">
-				<form method="post" onSubmit={submitLoginUser}>
+				<form method="post" onSubmit={handleSubmit(submitLoginUser)}>
 					<h3>The Wall</h3>
 					<h1>Log In</h1>
 					<div className="form_group">
 						<label htmlFor="email_input">Email</label>
 						<input
 							type="text"
-							name="email"
 							id="email_input"
 							tabIndex="1"
 							autoFocus
-							value={form_value.email}
-							onChange={changeFormState}
-							className={is_error ? "show_error_color" : ""}
+							className={errors.email ? "show_error_color" : ""}
+							{...register("email", {
+								required: "Email is required."
+							})}
 						/>
-						<div className={is_error ? "error_message show_error_message" : "error_message"}>Incorrect Email</div>
+						<div className={`error_message ${errors.email ? "show_error_message" : ""}`}>{errors?.email?.message}</div>
 					</div>
 					<div className="form_group">
 						<div className="forgot_password_container">
@@ -58,14 +44,14 @@ export default function Login() {
 						</div>
 						<input
 							type="password"
-							name="password"
 							id="password_input"
+							{...register("password", {
+								required: "Password is required."
+							})}
 							tabIndex="2"
-							value={form_value.password}
-							onChange={changeFormState}
-							className={is_error ? "show_error_color" : ""}
+							className={errors.password ? "show_error_color" : ""}
 						/>
-						<div className={is_error ? "error_message show_error_message" : "error_message"}>Incorrect Password</div>
+						<div className={`error_message ${errors.password ? "show_error_message" : ""}`}>{errors?.password?.message}</div>
 					</div>
 					<button type="submit" tabIndex="3">SIGN IN</button>
 					<p>
